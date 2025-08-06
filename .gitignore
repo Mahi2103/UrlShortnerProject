@@ -1,0 +1,15 @@
+# .NET build files
+bin/
+obj/
+*.user
+*.suo
+
+# React node_modules
+node_modules/
+build/
+
+# macOS metadata
+.DS_Store
+
+# VS Code settings
+.vscode/
