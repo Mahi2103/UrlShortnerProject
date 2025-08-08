@@ -3,6 +3,7 @@ using UrlShortner.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
 
@@ -17,6 +18,11 @@ builder.Services.AddSingleton<IMongoClient, MongoClient>(sp =>
 
 
 builder.Services.AddSingleton<ContactService>();
+builder.Services.AddScoped<IShortUrlService, ShortUrlService>();
+
+
+
+
 
 var app = builder.Build();
 

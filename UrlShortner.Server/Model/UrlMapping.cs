@@ -5,15 +5,15 @@ public class UrlMapping
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; }
+    public string? Id { get; set; }
 
-    public string OriginalUrl { get; set; }
+    public string? OriginalUrl { get; set; }
 
-    public string ShortCode { get; set; }
+    public string? ShortCode { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public DateTime? ExpiresAt { get; set; }
+    public DateTime? ExpiresAt { get; set; }           
 
     public int Clicks { get; set; } = 0;
 

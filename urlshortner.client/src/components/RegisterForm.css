@@ -1,0 +1,110 @@
+/* Layout */
+.register-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to bottom right, #f8f9fa, #e0d4ff);
+    padding: 20px;
+  }
+  
+  .form-box {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(128, 90, 213, 0.2);
+    max-width: 400px;
+    width: 100%;
+  }
+  
+  /* Typography */
+  .form-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  /* Form Styles */
+  .form-group {
+    margin-bottom: 18px;
+    position: relative;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  
+  .form-group input:focus {
+    border-color: #7e5bef;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(126, 91, 239, 0.2);
+  }
+  
+  /* Toggle Button */
+  .toggle-btn {
+    position: absolute;
+    right: 10px;
+    top: 32px;
+    background: none;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+    color: #555;
+  }
+  
+  /* Submit Button */
+  .submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to right, #7e5bef, #5f4bd9);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s ease;
+  }
+  
+  .submit-btn:hover {
+    background: linear-gradient(to right, #6d4bd9, #4c3fcf);
+  }
+  
+  /* Feedback */
+  .error {
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  
+  .success {
+    color: #16a34a;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  
+  .switch-text {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+  }
+  
+  .switch-text a {
+    color: #7e5bef;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
