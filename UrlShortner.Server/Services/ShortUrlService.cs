@@ -26,7 +26,7 @@ public class ShortUrlService : IShortUrlService
             hash = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(request.Password));
 
         if (request.ExpirationDate == default || request.ExpirationDate <= DateTime.UtcNow)
-            request.ExpirationDate = null; // treat invalid/expired dates as no expiration
+            request.ExpirationDate = null; 
 
         string shortUrl = GetBaseUrl() + "/" + shortCode;
 
