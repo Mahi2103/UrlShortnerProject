@@ -16,7 +16,6 @@ public class ShortUrlController : ControllerBase
     {
         if (!Uri.IsWellFormedUriString(req.OriginalUrl, UriKind.Absolute))
             return BadRequest("Invalid URL");
-
         try
         {
             var result = await _service.CreateShortUrlAsync(req);
