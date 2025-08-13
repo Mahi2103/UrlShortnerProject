@@ -21,12 +21,12 @@ export function URLShortener() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const shortenedUrl = `linkshort.ly/${customAlias || 'abc123'}`;
+  const shortenedUrl = `http://localhost:5295/${customAlias || 'abc123'}`;
 
   return (
     <div className="max-w-4xl mx-auto">
       {/* Main Shortening Interface */}
-      <div className="card mb-8" style={{ borderRadius: '1rem', padding: '2rem' }}>
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Shorten Your Links
@@ -47,12 +47,12 @@ export function URLShortener() {
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="Enter your long URL here..."
-              className="input-field input-field-lg pl-12"
+              className="w-full pl-12 pr-4 py-4 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
             />
           </div>
 
           {/* Custom Alias */}
-          <div className="grid grid-cols-1 gap-4" style={{ gridTemplateColumns: '1fr 1fr' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Custom Alias (Optional)
@@ -66,7 +66,7 @@ export function URLShortener() {
                   value={customAlias}
                   onChange={(e) => setCustomAlias(e.target.value)}
                   placeholder="my-custom-link"
-                  className="input-field pl-24"
+                  className="w-full pl-24 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                 />
               </div>
             </div>
@@ -74,7 +74,7 @@ export function URLShortener() {
             <div className="flex items-end">
               <button
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="btn btn-secondary w-full"
+                className="w-full py-3 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"
               >
                 {showAdvanced ? 'Hide' : 'Show'} Advanced Options
               </button>
@@ -86,7 +86,7 @@ export function URLShortener() {
             <div className="bg-gray-50 rounded-xl p-6 space-y-4 border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Advanced Options</h3>
               
-              <div className="grid grid-cols-1 gap-4" style={{ gridTemplateColumns: '1fr 1fr' }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Expiration Date */}
                 <div>
                   <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
@@ -97,7 +97,7 @@ export function URLShortener() {
                     type="datetime-local"
                     value={expirationDate}
                     onChange={(e) => setExpirationDate(e.target.value)}
-                    className="input-field"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                   />
                 </div>
 
@@ -112,7 +112,7 @@ export function URLShortener() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter password"
-                    className="input-field"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                   />
                 </div>
               </div>
@@ -122,8 +122,7 @@ export function URLShortener() {
           {/* Shorten Button */}
           <button
             onClick={handleShorten}
-
-            className="btn btn-primary btn-lg w-full"
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100 shadow-lg"
           >
             Shorten URL
           </button>
@@ -132,7 +131,7 @@ export function URLShortener() {
 
       {/* Result Display */}
       {showResult && (
-        <div className="card animate-slide-up" style={{ borderRadius: '1rem', padding: '2rem' }}>
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           <div className="flex items-center justify-center mb-6">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="w-8 h-8 text-green-600" />
@@ -160,16 +159,16 @@ export function URLShortener() {
               <div className="flex space-x-3">
                 <button
                   onClick={handleCopy}
-                  className={`btn ${
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                     copied
-                      ? 'bg-green-100 text-green-700 border border-green-200'
-                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                   }`}
                 >
                   <Copy className="w-4 h-4" />
                   <span>{copied ? 'Copied!' : 'Copy'}</span>
                 </button>
-                <button className="btn bg-white text-gray-700 border border-gray-300 hover:bg-gray-50">
+                <button className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200">
                   <ExternalLink className="w-4 h-4" />
                   <span>Visit</span>
                 </button>
@@ -178,7 +177,7 @@ export function URLShortener() {
           </div>
 
           {/* QR Code and Stats */}
-          <div className="grid grid-cols-1 gap-6" style={{ gridTemplateColumns: '1fr 1fr' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* QR Code */}
             <div className="bg-gray-50 rounded-xl p-6 text-center">
               <QrCode className="w-8 h-8 text-gray-600 mx-auto mb-4" />
