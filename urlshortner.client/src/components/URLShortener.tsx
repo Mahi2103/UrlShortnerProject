@@ -1,27 +1,63 @@
-import React, { useState } from 'react';
-import { Copy, Link2, QrCode, Calendar, Lock, ExternalLink, CheckCircle } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  Copy,
+  Link2,
+  QrCode,
+  Calendar,
+  Lock,
+  ExternalLink,
+  CheckCircle,
+} from "lucide-react";
 
 export function URLShortener() {
-  const [url, setUrl] = useState('');
-  const [customAlias, setCustomAlias] = useState('');
+  const [url, setUrl] = useState("");
+  const [customAlias, setCustomAlias] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [expirationDate, setExpirationDate] = useState('');
-  const [password, setPassword] = useState('');
+  const [expirationDate, setExpirationDate] = useState("");
+  const [password, setPassword] = useState("");
   const [showResult, setShowResult] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [shortenedUrl, setShortenedUrl] = useState("");
 
-  const handleShorten = () => {
-    if (url.trim()) {
+  const handleShorten = async () => {
+    if (!url.trim()) return;
+
+    try {
+      const response = await fetch(
+        "http://localhost:5295/api/ShortUrl/shorten",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            originalUrl: url,
+            customAlias: customAlias || null,
+            expirationDate: expirationDate || null,
+            password: password || null,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to shorten URL");
+      }
+
+      const data = await response.json();
+
+      setShortenedUrl(data.shortUrl);
       setShowResult(true);
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong while shortening the URL");
     }
   };
 
   const handleCopy = () => {
+    navigator.clipboard.writeText(shortenedUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
-  const shortenedUrl = `http://localhost:5295/${customAlias || 'abc123'}`;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -45,6 +81,7 @@ export function URLShortener() {
             <input
               type="url"
               value={url}
+
               onChange={(e) => setUrl(e.target.value)}
               placeholder="Enter your long URL here..."
               className="w-full pl-12 pr-4 py-4 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
@@ -59,14 +96,15 @@ export function URLShortener() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <span className="text-gray-500 text-sm">linkshort.ly/</span>
+                  <span className="text-gray-500 text-sm">http://localhost:5295/</span>
                 </div>
                 <input
                   type="text"
                   value={customAlias}
+                  required
                   onChange={(e) => setCustomAlias(e.target.value)}
                   placeholder="my-custom-link"
-                  className="w-full pl-24 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                  className="w-full pl-40 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                 />
               </div>
             </div>
@@ -76,7 +114,7 @@ export function URLShortener() {
                 onClick={() => setShowAdvanced(!showAdvanced)}
                 className="w-full py-3 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"
               >
-                {showAdvanced ? 'Hide' : 'Show'} Advanced Options
+                {showAdvanced ? "Hide" : "Show"} Advanced Options
               </button>
             </div>
           </div>
@@ -84,8 +122,10 @@ export function URLShortener() {
           {/* Advanced Options */}
           {showAdvanced && (
             <div className="bg-gray-50 rounded-xl p-6 space-y-4 border border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Advanced Options</h3>
-              
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Advanced Options
+              </h3>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Expiration Date */}
                 <div>
@@ -142,9 +182,7 @@ export function URLShortener() {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Your Link is Ready!
             </h2>
-            <p className="text-gray-600">
-              Share your shortened URL anywhere
-            </p>
+            <p className="text-gray-600">Share your shortened URL anywhere</p>
           </div>
 
           {/* Shortened URL Display */}
@@ -161,17 +199,22 @@ export function URLShortener() {
                   onClick={handleCopy}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                     copied
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                      ? "bg-green-100 text-green-700"
+                      : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-300"
                   }`}
                 >
                   <Copy className="w-4 h-4" />
-                  <span>{copied ? 'Copied!' : 'Copy'}</span>
+                  <span>{copied ? "Copied!" : "Copy"}</span>
                 </button>
-                <button className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                <a
+                  href={shortenedUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                >
                   <ExternalLink className="w-4 h-4" />
                   <span>Visit</span>
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -181,14 +224,16 @@ export function URLShortener() {
             {/* QR Code */}
             <div className="bg-gray-50 rounded-xl p-6 text-center">
               <QrCode className="w-8 h-8 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">QR Code</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                QR Code
+              </h3>
               <div className="w-32 h-32 bg-white border-2 border-gray-200 rounded-lg mx-auto mb-4 flex items-center justify-center">
                 <div className="w-24 h-24 bg-gray-900 rounded grid grid-cols-8 gap-px p-2">
                   {Array.from({ length: 64 }).map((_, i) => (
                     <div
                       key={i}
                       className={`w-full h-full ${
-                        Math.random() > 0.5 ? 'bg-white' : 'bg-gray-900'
+                        Math.random() > 0.5 ? "bg-white" : "bg-gray-900"
                       }`}
                     />
                   ))}
@@ -201,7 +246,9 @@ export function URLShortener() {
 
             {/* Quick Stats */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Quick Stats</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Quick Stats
+              </h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-2 px-4 bg-gray-50 rounded-lg">
                   <span className="text-gray-600">Total Clicks</span>

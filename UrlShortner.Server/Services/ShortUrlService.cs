@@ -10,6 +10,16 @@ public class ShortUrlService : IShortUrlService
         var database = config.GetDatabase("UrlShortner");
         _urlCollection = database.GetCollection<UrlMapping>("Urlmapping");
         _httpContextAccessor = httpContextAccessor;
+
+
+        var indexKeys = Builders<UrlMapping>.IndexKeys.Ascending(x => x.ExpiresAt);
+        var indexOptions = new CreateIndexOptions
+        {
+            ExpireAfter = TimeSpan.Zero 
+        };
+        var indexModel = new CreateIndexModel<UrlMapping>(indexKeys, indexOptions);
+
+        _urlCollection.Indexes.CreateOne(indexModel);
     }
 
     public async Task<ShortenUrlResponse> CreateShortUrlAsync(ShortenUrlRequest request)
@@ -26,7 +36,7 @@ public class ShortUrlService : IShortUrlService
             hash = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(request.Password));
 
         if (request.ExpirationDate == default || request.ExpirationDate <= DateTime.UtcNow)
-            request.ExpirationDate = null; 
+            request.ExpirationDate = null;
 
         string shortUrl = GetBaseUrl() + "/" + shortCode;
 
@@ -79,3 +89,4 @@ public class ShortUrlService : IShortUrlService
         return $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={url}";
     }
 }
+  

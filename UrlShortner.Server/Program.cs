@@ -6,23 +6,29 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers();
-
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// ✅ Add CORS service
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000") // React dev server
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        });
+});
 
+// MongoDB Client
 builder.Services.AddSingleton<IMongoClient, MongoClient>(sp =>
     new MongoClient(builder.Configuration.GetConnectionString("MongoDb"))
 );
 
-
 builder.Services.AddSingleton<ContactService>();
 builder.Services.AddScoped<IShortUrlService, ShortUrlService>();
-
-
-
-
 
 var app = builder.Build();
 
@@ -34,7 +40,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// ✅ Enable CORS middleware
+app.UseCors("AllowReactApp");
 
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
