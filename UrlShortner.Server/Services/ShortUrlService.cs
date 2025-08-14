@@ -78,11 +78,27 @@ public class ShortUrlService : IShortUrlService
         return new string(Enumerable.Repeat(chars, length).Select(x => x[random.Next(x.Length)]).ToArray());
     }
 
-    private string GetBaseUrl()
+    // private string GetBaseUrl()
+    // {
+    //     var req = _httpContextAccessor.HttpContext?.Request;
+    //     return $"{req?.Scheme}://{req?.Host}";
+    // }
+
+
+   private string GetBaseUrl()
     {
+
         var req = _httpContextAccessor.HttpContext?.Request;
+        var host = req?.Host.Host;
+
+        if (host == "localhost")
+        {
+            return $"{req?.Scheme}://192.168.137.241:{req?.Host.Port}";
+        }
+
         return $"{req?.Scheme}://{req?.Host}";
     }
+
 
     private string GenerateQr(string url)
     {

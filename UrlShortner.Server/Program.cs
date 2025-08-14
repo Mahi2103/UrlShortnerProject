@@ -9,6 +9,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5295); // Listen on all network interfaces
+});
+
+
 // ✅ Add CORS service
 builder.Services.AddCors(options =>
 {

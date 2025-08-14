@@ -18,6 +18,7 @@ export function URLShortener() {
   const [showResult, setShowResult] = useState(false);
   const [copied, setCopied] = useState(false);
   const [shortenedUrl, setShortenedUrl] = useState("");
+  const [qrCodeUrl, setQrCodeUrl] = useState("");
 
   const handleShorten = async () => {
     if (!url.trim()) return;
@@ -47,6 +48,7 @@ export function URLShortener() {
 
       setShortenedUrl(data.shortUrl);
       setShowResult(true);
+      setQrCodeUrl(data.qrCodeUrl);
     } catch (error) {
       console.error(error);
       alert("Something went wrong while shortening the URL");
@@ -81,7 +83,6 @@ export function URLShortener() {
             <input
               type="url"
               value={url}
-
               onChange={(e) => setUrl(e.target.value)}
               placeholder="Enter your long URL here..."
               className="w-full pl-12 pr-4 py-4 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
@@ -96,7 +97,9 @@ export function URLShortener() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <span className="text-gray-500 text-sm">http://localhost:5295/</span>
+                  <span className="text-gray-500 text-sm">
+                    http://localhost:5295/
+                  </span>
                 </div>
                 <input
                   type="text"
@@ -227,21 +230,28 @@ export function URLShortener() {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 QR Code
               </h3>
+
               <div className="w-32 h-32 bg-white border-2 border-gray-200 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                <div className="w-24 h-24 bg-gray-900 rounded grid grid-cols-8 gap-px p-2">
-                  {Array.from({ length: 64 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`w-full h-full ${
-                        Math.random() > 0.5 ? "bg-white" : "bg-gray-900"
-                      }`}
-                    />
-                  ))}
-                </div>
+                {qrCodeUrl ? (
+                  <img
+                    src={qrCodeUrl}
+                    alt=""
+                    className="w-full h-full object-contain p-2"
+                  />
+                ) : (
+                  <span className="text-gray-400 text-sm">No QR available</span>
+                )}
               </div>
-              <button className="text-blue-600 font-medium hover:text-blue-700 transition-colors duration-200">
-                Download QR Code
-              </button>
+
+              {qrCodeUrl && (
+                <a
+                  href={qrCodeUrl}
+                  download="qrcode.png"
+                  className="text-blue-600 font-medium hover:text-blue-700 transition-colors duration-200"
+                >
+                  Download QR Code
+                </a>
+              )}
             </div>
 
             {/* Quick Stats */}

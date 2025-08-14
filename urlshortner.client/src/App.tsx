@@ -4,6 +4,8 @@ import { URLShortener } from './components/URLShortener';
 
 import { Settings } from './components/Settings';
 import { Analytics } from './components/Analytics';
+import { Register } from './components/Register';
+import { Login } from './components/Login';
 
 
 function App() {
@@ -28,6 +30,7 @@ function App() {
       <main className="py-8 px-4 sm:px-6 lg:px-8">
         {renderContent()}
       </main>
+
     </div>
   );
 }
