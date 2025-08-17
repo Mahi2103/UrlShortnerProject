@@ -253,7 +253,7 @@ export function Analytics() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-200">
+        {/* <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -272,7 +272,7 @@ export function Analytics() {
             <span className="text-sm text-green-600 font-medium">+8%</span>
             <span className="text-sm text-gray-500 ml-2">vs last period</span>
           </div>
-        </div>
+        </div> */}
 
         <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-200">
           <div className="flex items-center justify-between">
@@ -384,7 +384,7 @@ export function Analytics() {
               </div>
 
               {/* URL Filter */}
-              <select
+              {/* <select
                 value={selectedUrl}
                 onChange={(e) => setSelectedUrl(e.target.value)}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
@@ -395,7 +395,7 @@ export function Analytics() {
                     {url.shortUrl}
                   </option>
                 ))}
-              </select>
+              </select> */}
             </div>
           </div>
         </div>

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Header } from './components/Header';
 import { URLShortener } from './components/URLShortener';
 
-import { Settings } from './components/Settings';
+// import { Settings } from './components/Settings';
 import { Analytics } from './components/Analytics';
 import { Register } from './components/Register';
 import { Login } from './components/Login';
+import LinksSection from './components/LinkSection';
 
 
 function App() {
@@ -17,8 +18,9 @@ function App() {
         return <URLShortener />;
       case 'analytics':
         return <Analytics />;
-      case 'settings':
-        return <Settings />;
+        case 'links':
+          return <LinksSection />;
+          
       default:
         return <URLShortener />;
     }

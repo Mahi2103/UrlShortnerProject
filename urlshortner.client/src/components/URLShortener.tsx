@@ -19,10 +19,33 @@ export function URLShortener() {
   const [copied, setCopied] = useState(false);
   const [shortenedUrl, setShortenedUrl] = useState("");
   const [qrCodeUrl, setQrCodeUrl] = useState("");
+  const [urlError, setUrlError] = useState("");
+  const [customAliasError, setCustomAliasError] = useState("");
 
+ const isValidUrl = (input: string) => {
+  try {
+    if (!/^https?:\/\//i.test(input)) return false;
+    new URL(input); 
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+  
+  
   const handleShorten = async () => {
-    if (!url.trim()) return;
-
+    setUrlError(""); // Clear previous error
+  
+    if (!url.trim()) {
+      setUrlError("Please enter a URL to shorten.");
+      return;
+    }
+  
+    if (!(await isValidUrl(url))) {
+      setUrlError("Oops! That doesn’t look like a valid or reachable URL.");
+      return;
+    }
     try {
       const response = await fetch(
         "http://localhost:5295/api/ShortUrl/shorten",
@@ -32,29 +55,36 @@ export function URLShortener() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            originalUrl: url,
+            originalUrl: url.startsWith("http") ? url : `https://${url}`,
             customAlias: customAlias || null,
             expirationDate: expirationDate || null,
             password: password || null,
           }),
         }
       );
-
+  
       if (!response.ok) {
-        throw new Error("Failed to shorten URL");
+        const data = await response.json();
+        if (response.status === 400) {
+          setUrlError("Oops! That doesn’t look like a valid URL. Please check and try again.");
+        } else if (response.status === 409) {
+          setUrlError("This custom link is already taken. Please choose another one.");
+        } else {
+          setUrlError("Something went wrong. Please try again later.");
+        }
+        return;
       }
-
+  
       const data = await response.json();
-
       setShortenedUrl(data.shortUrl);
-      setShowResult(true);
       setQrCodeUrl(data.qrCodeUrl);
+      setShowResult(true);
     } catch (error) {
       console.error(error);
-      alert("Something went wrong while shortening the URL");
+      setUrlError("Something went wrong. Please try again later.");
     }
   };
-
+  
   const handleCopy = () => {
     navigator.clipboard.writeText(shortenedUrl);
     setCopied(true);
@@ -76,17 +106,31 @@ export function URLShortener() {
 
         <div className="space-y-6">
           {/* URL Input */}
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Link2 className="h-5 w-5 text-gray-400" />
+          <div className="w-full">
+            <div className="relative">
+              {/* Icon inside input */}
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Link2 className="h-5 w-5 text-gray-400" />
+              </div>
+
+              {/* Input */}
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="Enter your long URL here..."
+                className={`w-full pl-12 pr-4 py-4 text-lg border rounded-xl transition-colors duration-200 ${
+                  urlError
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                } focus:outline-none focus:ring-2`}
+              />
             </div>
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="Enter your long URL here..."
-              className="w-full pl-12 pr-4 py-4 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-            />
+
+            {/* Error message below input */}
+            {urlError && (
+              <p className="text-red-500 text-sm mt-2">{urlError}</p>
+            )}
           </div>
 
           {/* Custom Alias */}

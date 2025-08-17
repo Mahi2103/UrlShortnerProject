@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link2, BarChart3, Settings, Menu, X } from 'lucide-react';
+import { Link2, BarChart3, Settings, Menu, X, Link } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: string;
@@ -11,8 +11,8 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
 
   const navigation = [
     { id: 'shorten', label: 'Shorten', icon: Link2 },
+    { id: 'links', label: 'Links', icon: Link },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (
