@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+[Authorize]
 [ApiController]
-[Route("")]
 public class ShortUrlController : ControllerBase
 {
     private readonly IShortUrlService _service;
@@ -28,7 +29,9 @@ public class ShortUrlController : ControllerBase
         }
     }
 
-    [HttpGet("{code}")]
+    // Redirect route — accessible without authentication
+    [AllowAnonymous]
+    [HttpGet("r/{code}")]   // Removed leading slash for proper route
     public async Task<IActionResult> RedirectTo(string code)
     {
         var mapping = await _service.GetByShortCodeAsync(code);
@@ -46,6 +49,7 @@ public class ShortUrlController : ControllerBase
         });
 
         await _service.UpdateUrlMappingAsync(mapping.Id, mapping);
+
         return Redirect(mapping.OriginalUrl);
     }
 
@@ -65,40 +69,17 @@ public class ShortUrlController : ControllerBase
         return Ok(links);
     }
 
-    [HttpGet("api/shorturl/details/{id}")]
-    public async Task<IActionResult> GetDetails(string id)
-    {
-        var url = await _service.GetUrlDetailsAsync(id);
-        if (url == null) return NotFound();
-        return Ok(url);
-    }
-
-    [HttpGet("api/shorturl/summary")]
-    public async Task<IActionResult> GetSummary()
-    {
-        var summary = await _service.GetAnalyticsSummaryAsync();
-        return Ok(summary);
-    }
-
-    [HttpGet("api/shorturl/clicks/{id}")]
-    public async Task<IActionResult> GetClicksOverTime(string id)
-    {
-        var data = await _service.GetClicksOverTimeAsync(id);
-        return Ok(data);
-    }
-
-  [HttpDelete("{id}")]
+    [HttpDelete("api/shorturl/{id}")]
     public async Task<IActionResult> DeleteLink(string id)
     {
         try
         {
             await _service.DeleteUrlAsync(id);
-            return NoContent(); // 204 status
+            return NoContent(); 
         }
         catch (Exception ex)
         {
             return NotFound(new { message = ex.Message });
         }
     }
-
 }

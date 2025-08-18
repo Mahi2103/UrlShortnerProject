@@ -1,11 +1,8 @@
 public interface IShortUrlService
 {
     Task<ShortenUrlResponse> CreateShortUrlAsync(ShortenUrlRequest request);
-    Task<UrlMapping?> GetByShortCodeAsync(string shortCode); // nullable
+    Task<UrlMapping?> GetByShortCodeAsync(string shortCode); 
     Task UpdateUrlMappingAsync(string id, UrlMapping updated);
-    Task<List<UrlMappingDto>> GetAllLinksAsync(); // For table
-    Task<UrlMapping?> GetUrlDetailsAsync(string id); // For card
-    Task<AnalyticsSummary> GetAnalyticsSummaryAsync(); // For dashboard cards
-    Task<List<ClicksOverTime>> GetClicksOverTimeAsync(string id); // For chart
+    Task<List<UrlMappingDto>> GetAllLinksAsync(); 
     Task DeleteUrlAsync(string id);
 }

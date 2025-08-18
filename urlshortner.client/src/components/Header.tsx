@@ -1,21 +1,41 @@
 import React, { useState } from 'react';
 import { Link2, BarChart3, Settings, Menu, X, Link } from 'lucide-react';
+import { Analytics } from './Analytics';
+import LinksSection from './LinkSection';
+import { URLShortener } from './URLShortener';
 
-interface HeaderProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
-}
 
-export function Header({ activeTab, onTabChange }: HeaderProps) {
+export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const [activeTab, setActiveTab] = useState("shorten");
+  const onTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setIsMobileMenuOpen(false); // Close mobile menu on tab change
+  };
+
+  const renderContent = () => {
+
+    switch (activeTab) {  
+      case "shorten":
+        return <URLShortener />;
+      case "analytics":   
+        return <Analytics />;
+      case "links":
+        return <LinksSection />;
+      default:
+        return <URLShortener />;
+    }
+  };
   const navigation = [
     { id: 'shorten', label: 'Shorten', icon: Link2 },
     { id: 'links', label: 'Links', icon: Link },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    // { id: 'analytics', label: 'Analytics', icon: BarChart3 },
   ];
 
   return (
+    <div>
+      
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -95,8 +115,12 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
               })}
             </div>
           </div>
-        )}
+        )}  
       </div>
     </header>
+
+    <main className="py-8 px-4 sm:px-6 lg:px-8">{renderContent()}</main>
+    </div>
+
   );
 }

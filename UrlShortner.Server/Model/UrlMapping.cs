@@ -20,8 +20,8 @@ public class UrlMapping
     public List<AccessLog> AccessLogs { get; set; } = new List<AccessLog>();
 
 
-    // [BsonRepresentation(BsonType.ObjectId)]
-    // public string UserId { get; set; } = string.Empty;
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string UserId { get; set; } = string.Empty;
 
     public bool IsPasswordProtected { get; set; } = false;
 

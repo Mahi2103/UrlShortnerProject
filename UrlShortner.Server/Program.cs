@@ -92,16 +92,29 @@ builder.Services.AddSwaggerGen(c =>
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+                Reference = new OpenApiReference {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                    }
             },
             new string[] {}
         }
     });
 });
 
+// builder.WebHost.ConfigureKestrel(options =>
+// {
+//     // Listen on all network interfaces (LAN + localhost)
+//     options.ListenAnyIP(5295); // HTTP
+//     // If you want HTTPS too:
+//     // options.ListenAnyIP(7295, listenOptions => listenOptions.UseHttps());
+// });
+
+    //   "applicationUrl": "http://92.168.137.206",
+
 var app = builder.Build();
 
-// Swagger only in dev
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -110,10 +123,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowReactApp");
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
+
 
 app.Run();

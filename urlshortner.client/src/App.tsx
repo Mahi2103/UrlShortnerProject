@@ -1,38 +1,34 @@
-import React, { useState } from 'react';
-import { Header } from './components/Header';
-import { URLShortener } from './components/URLShortener';
+import React, { useEffect } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { Header } from "./components/Header";
+import { Register } from "./components/Register";
+import { Login } from "./components/Login";
 
-// import { Settings } from './components/Settings';
-import { Analytics } from './components/Analytics';
-import { Register } from './components/Register';
-import { Login } from './components/Login';
-import LinksSection from './components/LinkSection';
-
+// Helper to check if user is logged in
+const isLoggedIn = () => {
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userid");
+  return !!token && !!userId;
+};
 
 function App() {
-  const [activeTab, setActiveTab] = useState('shorten');
+  const navigate = useNavigate();
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'shorten':
-        return <URLShortener />;
-      case 'analytics':
-        return <Analytics />;
-        case 'links':
-          return <LinksSection />;
-          
-      default:
-        return <URLShortener />;
+  useEffect(() => {
+    if (isLoggedIn()) {
+      navigate("/shorten");
+    } else {
+      navigate("/login");
     }
-  };
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header activeTab={activeTab} onTabChange={setActiveTab} />
-      <main className="py-8 px-4 sm:px-6 lg:px-8">
-        {renderContent()}
-      </main>
-
+      <Routes>
+        <Route path="/shorten" element={<Header />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
     </div>
   );
 }

@@ -8,7 +8,7 @@ import {
   BarChart3,
   Calendar,
   Clock,
-  QrCode,
+  X,
 } from "lucide-react";
 
 interface Link {
@@ -19,18 +19,27 @@ interface Link {
   createdAt: string;
   expiresAt: string | null;
   qrCodeUrl: string;
+  browser?: string;
+  device?: string;
+  ipAddress?: string;
 }
+
+const token = localStorage.getItem("token");
 
 const LinksSection: React.FC = () => {
   const [links, setLinks] = useState<Link[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedLink, setSelectedLink] = useState<Link | null>(null);
 
   useEffect(() => {
     const fetchLinks = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5295/api/shorturl/all"
-        );
+        const response = await axios.get("http://localhost:5295/api/shorturl/all", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         const mappedLinks: Link[] = response.data.map((link: any) => ({
           id: link.id,
@@ -40,6 +49,9 @@ const LinksSection: React.FC = () => {
           createdAt: link.createdAt,
           expiresAt: link.expiresAt,
           qrCodeUrl: link.qrCodeUrl,
+          browser: link.browser,
+          device: link.device,
+          ipAddress: link.ipAddress,
         }));
 
         setLinks(mappedLinks);
@@ -53,7 +65,7 @@ const LinksSection: React.FC = () => {
 
   const handleCopy = async (shortLink: string, id: string) => {
     try {
-      await navigator.clipboard.writeText(`http://localhost:5295/${shortLink}`);
+      await navigator.clipboard.writeText(`http://localhost:5295/r/${shortLink}`);
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
     } catch (err) {
@@ -61,31 +73,17 @@ const LinksSection: React.FC = () => {
     }
   };
 
-  const handleShare = async (shortLink: string, originalUrl: string) => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Shortened URL",
-          text: `Check out this link: ${originalUrl}`,
-          url: `https://${shortLink}`,
-        });
-      } catch {
-        handleCopy(shortLink, "share-fallback");
-      }
-    } else {
-      handleCopy(shortLink, "share-fallback");
-    }
-  };
-
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:5295/${id}`);
+      await axios.delete(`http://localhost:5295/api/shorturl/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setLinks(links.filter((link) => link.id !== id));
     } catch (err) {
       console.error("Failed to delete link:", err);
     }
   };
-
+  
   const formatDate = (dateString: string) =>
     new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
@@ -104,11 +102,13 @@ const LinksSection: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Your Links</h2>
         <div className="text-sm text-gray-500">{links.length} total links</div>
       </div>
 
+      {/* Links List */}
       <div className="grid gap-4">
         {links.map((link) => {
           const expired = isExpired(link.expiresAt);
@@ -143,19 +143,16 @@ const LinksSection: React.FC = () => {
                     <div className="flex items-center space-x-2 mb-3">
                       <span className="text-blue-600 font-semibold text-lg">
                         <a
-                          href={`http://localhost:5295/${link.shortLink}`}
+                          href={`http://localhost:5295/r/${link.shortLink}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          {`http://localhost:5295/${link.shortLink}`}
+                          {link.shortLink}
                         </a>
                       </span>
                     </div>
 
-                    <p
-                      className="text-gray-600 text-sm mb-3"
-                      title={link.originalUrl}
-                    >
+                    <p className="text-gray-600 text-sm mb-3" title={link.originalUrl}>
                       {link.originalUrl}
                     </p>
                   </div>
@@ -171,16 +168,6 @@ const LinksSection: React.FC = () => {
                       ) : (
                         <Copy className="w-5 h-5" />
                       )}
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        handleShare(link.shortLink, link.originalUrl)
-                      }
-                      className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                      title="Share link"
-                    >
-                      <Share2 className="w-5 h-5" />
                     </button>
 
                     <button
@@ -223,18 +210,15 @@ const LinksSection: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-gray-600 text-sm">
-                      <a
-                        href={link.qrCodeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        View QR Code
-                      </a>
-                    </p>
-                  </div>
+                  <button
+                    onClick={() => {
+                      setSelectedLink(link);
+                      setShowModal(true);
+                    }}
+                    className="text-blue-600 hover:underline"
+                  >
+                    View Analytics
+                  </button>
                 </div>
               </div>
             </div>
@@ -242,17 +226,51 @@ const LinksSection: React.FC = () => {
         })}
       </div>
 
+      {/* Modal */}
+      {showModal && selectedLink && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="text-xl font-bold mb-4">Analytics</h3>
+
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-500">QR Code</p>
+                <img
+                  src={selectedLink.qrCodeUrl}
+                  alt="QR Code"
+                  className="w-32 h-32 mt-2"
+                />
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">IP Address</p>
+                <p className="font-medium">{selectedLink.ipAddress ?? "N/A"}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-gray-500">Device</p>
+                <p className="font-medium">{selectedLink.device ?? "N/A"}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Empty state */}
       {links.length === 0 && (
         <div className="text-center py-12">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <ExternalLink className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No links yet
-          </h3>
-          <p className="text-gray-500">
-            Create your first shortened link to get started.
-          </p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No links yet</h3>
+          <p className="text-gray-500">Create your first shortened link to get started.</p>
         </div>
       )}
     </div>

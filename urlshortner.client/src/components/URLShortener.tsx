@@ -21,7 +21,7 @@ export function URLShortener() {
   const [qrCodeUrl, setQrCodeUrl] = useState("");
   const [urlError, setUrlError] = useState("");
   const [customAliasError, setCustomAliasError] = useState("");
-
+const token = localStorage.getItem("token");
  const isValidUrl = (input: string) => {
   try {
     if (!/^https?:\/\//i.test(input)) return false;
@@ -34,56 +34,68 @@ export function URLShortener() {
 
   
   
-  const handleShorten = async () => {
-    setUrlError(""); // Clear previous error
-  
-    if (!url.trim()) {
-      setUrlError("Please enter a URL to shorten.");
-      return;
-    }
-  
-    if (!(await isValidUrl(url))) {
-      setUrlError("Oops! That doesn’t look like a valid or reachable URL.");
-      return;
-    }
-    try {
-      const response = await fetch(
-        "http://localhost:5295/api/ShortUrl/shorten",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            originalUrl: url.startsWith("http") ? url : `https://${url}`,
-            customAlias: customAlias || null,
-            expirationDate: expirationDate || null,
-            password: password || null,
-          }),
-        }
-      );
-  
-      if (!response.ok) {
-        const data = await response.json();
-        if (response.status === 400) {
-          setUrlError("Oops! That doesn’t look like a valid URL. Please check and try again.");
-        } else if (response.status === 409) {
-          setUrlError("This custom link is already taken. Please choose another one.");
-        } else {
-          setUrlError("Something went wrong. Please try again later.");
-        }
-        return;
+ const handleShorten = async () => {
+  setUrlError("");
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    setUrlError("You must be logged in to shorten URLs.");
+    return;
+  }
+
+  if (!url.trim()) {
+    setUrlError("Please enter a URL to shorten.");
+    return;
+  }
+
+  if (!isValidUrl(url)) {
+    setUrlError("Oops! That doesn’t look like a valid or reachable URL.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "http://localhost:5295/api/ShortUrl/shorten",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          originalUrl: url.startsWith("http") ? url : `https://${url}`,
+          customAlias: customAlias || null,
+          expirationDate: expirationDate || null,
+          password: password || null,
+        }),
       }
-  
-      const data = await response.json();
-      setShortenedUrl(data.shortUrl);
-      setQrCodeUrl(data.qrCodeUrl);
-      setShowResult(true);
-    } catch (error) {
-      console.error(error);
-      setUrlError("Something went wrong. Please try again later.");
+    );
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+
+      if (response.status === 400) {
+        setUrlError("Oops! That doesn’t look like a valid URL. Please check and try again.");
+      } else if (response.status === 401) {
+        setUrlError("You are not authorized. Please log in again.");
+      } else if (response.status === 409) {
+        setUrlError("This custom link is already taken. Please choose another one.");
+      } else {
+        setUrlError("Something went wrong. Please try again later.");
+      }
+      return;
     }
-  };
+
+    const data = await response.json();
+    setShortenedUrl(data.shortUrl);
+    setQrCodeUrl(data.qrCodeUrl);
+    setShowResult(true);
+  } catch (error) {
+    console.error(error);
+    setUrlError("Something went wrong. Please try again later.");
+  }
+};
+
   
   const handleCopy = () => {
     navigator.clipboard.writeText(shortenedUrl);
