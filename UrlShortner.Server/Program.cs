@@ -19,6 +19,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 builder.Services.AddScoped<IShortUrlService, ShortUrlService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddHttpClient<IpLocationService>();
 
 // CORS
 builder.Services.AddCors(options =>
@@ -102,13 +103,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// builder.WebHost.ConfigureKestrel(options =>
-// {
-//     // Listen on all network interfaces (LAN + localhost)
-//     options.ListenAnyIP(5295); // HTTP
-//     // If you want HTTPS too:
-//     // options.ListenAnyIP(7295, listenOptions => listenOptions.UseHttps());
-// });
+builder.WebHost.ConfigureKestrel(options =>
+{
+    // Listen on all network interfaces (LAN + localhost)
+    options.ListenAnyIP(5295); // HTTP
+    // If you want HTTPS too:
+    // options.ListenAnyIP(7295, listenOptions => listenOptions.UseHttps());
+});
 
     //   "applicationUrl": "http://92.168.137.206",
 

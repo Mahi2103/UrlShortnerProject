@@ -35,12 +35,12 @@ const LinksSection: React.FC = () => {
   useEffect(() => {
     const fetchLinks = async () => {
       try {
-        const response = await axios.get("http://localhost:5295/api/shorturl/all", {
+        const response = await axios.get("http://192.168.137.182:5295/api/shorturl/all", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
+  
         const mappedLinks: Link[] = response.data.map((link: any) => ({
           id: link.id,
           shortLink: link.shortCode,
@@ -53,15 +53,20 @@ const LinksSection: React.FC = () => {
           device: link.device,
           ipAddress: link.ipAddress,
         }));
-
+  
         setLinks(mappedLinks);
       } catch (err) {
-        console.error("Failed to fetch links:", err);
+        console.error("Failed to fetch links", err);
       }
     };
+  
 
     fetchLinks();
+
+    const interval = setInterval(fetchLinks, 5000);
+    return () => clearInterval(interval);
   }, []);
+  
 
   const handleCopy = async (shortLink: string, id: string) => {
     try {
@@ -102,13 +107,13 @@ const LinksSection: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Your Links</h2>
         <div className="text-sm text-gray-500">{links.length} total links</div>
       </div>
 
-      {/* Links List */}
+
       <div className="grid gap-4">
         {links.map((link) => {
           const expired = isExpired(link.expiresAt);
@@ -122,7 +127,7 @@ const LinksSection: React.FC = () => {
               }`}
             >
               <div className="p-6">
-                {/* Header with actions */}
+
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-3">
@@ -180,7 +185,7 @@ const LinksSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Stats */}
+
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <div className="flex items-center space-x-6">
                     <div className="flex items-center space-x-2">
@@ -226,7 +231,7 @@ const LinksSection: React.FC = () => {
         })}
       </div>
 
-      {/* Modal */}
+
       {showModal && selectedLink && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
@@ -250,8 +255,8 @@ const LinksSection: React.FC = () => {
               </div>
 
               <div>
-                <p className="text-sm text-gray-500">IP Address</p>
-                <p className="font-medium">{selectedLink.ipAddress ?? "N/A"}</p>
+                <p className="text-sm text-gray-500">Browser</p>
+                <p className="font-medium">{selectedLink.browser ?? "N/A"}</p>
               </div>
 
               <div>
@@ -263,7 +268,7 @@ const LinksSection: React.FC = () => {
         </div>
       )}
 
-      {/* Empty state */}
+
       {links.length === 0 && (
         <div className="text-center py-12">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">

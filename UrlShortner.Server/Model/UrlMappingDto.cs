@@ -8,8 +8,8 @@ public class UrlMappingDto
     public DateTime CreatedAt { get; set; }
     public string? QrCodeUrl { get; set; }
 
-    public string? IpAddress { get; set; }
+   public string? Browser { get; set; }
     public string? Device { get; set; }
-    public string? Browser { get; set; }
-
+    public string? IpAddress { get; set; }
+    public List<AccessLog>? AccessLogs { get; set; } = new();
 }

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { Header } from "./components/Header";
 import { Register } from "./components/Register";
 import { Login } from "./components/Login";
@@ -13,14 +13,19 @@ const isLoggedIn = () => {
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (isLoggedIn()) {
-      navigate("/shorten");
+      if (location.pathname === "/login" || location.pathname === "/register") {
+        navigate("/shorten", { replace: true });
+      }
     } else {
-      navigate("/login");
+      if (location.pathname !== "/login" && location.pathname !== "/register") {
+        navigate("/login", { replace: true });
+      }
     }
-  }, [navigate]);
+  }, [navigate, location]);
 
   return (
     <div className="min-h-screen bg-gray-50">

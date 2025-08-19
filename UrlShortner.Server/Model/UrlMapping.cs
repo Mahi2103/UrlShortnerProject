@@ -13,11 +13,10 @@ public class UrlMapping
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+   public List<AccessLog> AccessLogs { get; set; } = new List<AccessLog>();
     public DateTime? ExpiresAt { get; set; }           
 
-    public int  Clicks { get; set; } = 0;
-
-    public List<AccessLog> AccessLogs { get; set; } = new List<AccessLog>();
+    public int Clicks { get; set; } = 0;
 
 
     [BsonRepresentation(BsonType.ObjectId)]
@@ -29,4 +28,3 @@ public class UrlMapping
 
     public string? QrCodeUrl { get; set; }
 }
-  

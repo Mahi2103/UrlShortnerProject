@@ -29,29 +29,47 @@ public class ShortUrlController : ControllerBase
         }
     }
 
-    // Redirect route — accessible without authentication
     [AllowAnonymous]
-    [HttpGet("r/{code}")]   // Removed leading slash for proper route
+    [HttpGet("r/{code}")]
     public async Task<IActionResult> RedirectTo(string code)
     {
         var mapping = await _service.GetByShortCodeAsync(code);
         if (mapping == null) return NotFound();
 
-        if (mapping.ExpiresAt.HasValue && mapping.ExpiresAt.Value != default && mapping.ExpiresAt < DateTime.UtcNow)
+        if (mapping.ExpiresAt.HasValue && mapping.ExpiresAt < DateTime.UtcNow)
             return BadRequest("Link expired");
 
         mapping.Clicks++;
         mapping.AccessLogs.Add(new AccessLog
         {
             IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-            Browser = Request.Headers["User-Agent"],
-            Device = ParseDevice(Request.Headers["User-Agent"])
+            Device = ParseDevice(Request.Headers["User-Agent"]),
+            Browser = ParseBrowser(Request.Headers["User-Agent"])
         });
 
         await _service.UpdateUrlMappingAsync(mapping.Id, mapping);
 
         return Redirect(mapping.OriginalUrl);
     }
+
+    private string ParseBrowser(string? userAgent)
+    {
+        if (string.IsNullOrEmpty(userAgent)) return "Unknown";
+
+        if (userAgent.Contains("Chrome") && !userAgent.Contains("Edg"))
+            return "Chrome";
+        if (userAgent.Contains("Safari") && !userAgent.Contains("Chrome"))
+            return "Safari";
+        if (userAgent.Contains("Firefox"))
+            return "Firefox";
+        if (userAgent.Contains("Edg"))
+            return "Edge";
+        if (userAgent.Contains("MSIE") || userAgent.Contains("Trident"))
+            return "Internet Explorer";
+
+        return "Other";
+    }
+
 
     private string ParseDevice(string? userAgent)
     {
@@ -61,6 +79,7 @@ public class ShortUrlController : ControllerBase
         if (userAgent.Contains("Mac")) return "Mac";
         return "Unknown";
     }
+
 
     [HttpGet("api/shorturl/all")]
     public async Task<ActionResult<List<UrlMappingDto>>> GetAllLinks()
@@ -75,7 +94,7 @@ public class ShortUrlController : ControllerBase
         try
         {
             await _service.DeleteUrlAsync(id);
-            return NoContent(); 
+            return NoContent();
         }
         catch (Exception ex)
         {

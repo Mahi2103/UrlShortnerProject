@@ -74,6 +74,7 @@ const token = localStorage.getItem("token");
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
 
+
       if (response.status === 400) {
         setUrlError("Oops! That doesn’t look like a valid URL. Please check and try again.");
       } else if (response.status === 401) {
@@ -105,7 +106,7 @@ const token = localStorage.getItem("token");
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Main Shortening Interface */}
+
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
@@ -117,7 +118,7 @@ const token = localStorage.getItem("token");
         </div>
 
         <div className="space-y-6">
-          {/* URL Input */}
+
           <div className="w-full">
             <div className="relative">
               {/* Icon inside input */}
@@ -125,7 +126,7 @@ const token = localStorage.getItem("token");
                 <Link2 className="h-5 w-5 text-gray-400" />
               </div>
 
-              {/* Input */}
+
               <input
                 type="url"
                 value={url}
@@ -145,7 +146,7 @@ const token = localStorage.getItem("token");
             )}
           </div>
 
-          {/* Custom Alias */}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -178,7 +179,7 @@ const token = localStorage.getItem("token");
             </div>
           </div>
 
-          {/* Advanced Options */}
+
           {showAdvanced && (
             <div className="bg-gray-50 rounded-xl p-6 space-y-4 border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -186,7 +187,7 @@ const token = localStorage.getItem("token");
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Expiration Date */}
+
                 <div>
                   <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                     <Calendar className="w-4 h-4 mr-2" />
@@ -200,7 +201,7 @@ const token = localStorage.getItem("token");
                   />
                 </div>
 
-                {/* Password Protection */}
+
                 <div>
                   <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                     <Lock className="w-4 h-4 mr-2" />
@@ -218,7 +219,7 @@ const token = localStorage.getItem("token");
             </div>
           )}
 
-          {/* Shorten Button */}
+
           <button
             onClick={handleShorten}
             className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100 shadow-lg"
@@ -228,7 +229,7 @@ const token = localStorage.getItem("token");
         </div>
       </div>
 
-      {/* Result Display */}
+
       {showResult && (
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
           <div className="flex items-center justify-center mb-6">
@@ -244,7 +245,7 @@ const token = localStorage.getItem("token");
             <p className="text-gray-600">Share your shortened URL anywhere</p>
           </div>
 
-          {/* Shortened URL Display */}
+
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6">
             <div className="flex items-center justify-between">
               <div className="flex-1">
@@ -278,7 +279,7 @@ const token = localStorage.getItem("token");
             </div>
           </div>
 
-          {/* QR Code and Stats */}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* QR Code */}
             <div className="bg-gray-50 rounded-xl p-6 text-center">
@@ -310,7 +311,7 @@ const token = localStorage.getItem("token");
               )}
             </div>
 
-            {/* Quick Stats */}
+
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900">
                 Quick Stats
